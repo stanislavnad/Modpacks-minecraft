@@ -3,7 +3,15 @@ import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
 import styles from './ModpackCard.module.css';
 
-function ModpackCard({ title, loader, version, modsCount, size, updatedAt }) {
+function ModpackCard({
+  title,
+  loader,
+  version,
+  modsCount,
+  size,
+  updatedAt,
+  onEdit,
+}) {
   return (
     <article className={styles.card}>
       <div className={styles.header}>
@@ -34,7 +42,7 @@ function ModpackCard({ title, loader, version, modsCount, size, updatedAt }) {
         <Button variant="primary" size="md" className={styles.downloadBtn}>
           Завантажити .zip
         </Button>
-        <IconButton label="Редагувати збірку">
+        <IconButton label="Редагувати збірку" onClick={onEdit}>
           <svg
             width="15"
             height="15"
@@ -71,4 +79,3 @@ function ModpackCard({ title, loader, version, modsCount, size, updatedAt }) {
 }
 
 export default ModpackCard;
-

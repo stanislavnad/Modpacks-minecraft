@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
 import Chip from '../ui/Chip';
 import Input from '../ui/Input';
@@ -14,6 +15,13 @@ const LOADERS = [
 const ADDED_MODS = ['JEI', 'Sodium', 'Iris Shaders', 'Lithium'];
 
 function BuilderForm() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    navigate('/modpacks');
+  };
+
   return (
     <section className={styles.card}>
       <div className={styles.header}>
@@ -23,7 +31,7 @@ function BuilderForm() {
         </p>
       </div>
 
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <Input
           label="Назва збірки"
           placeholder="Наприклад: Medieval Vanilla+"
@@ -77,10 +85,14 @@ function BuilderForm() {
         </div>
 
         <div className={styles.footerActions}>
-          <Button variant="secondary" size="md">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => navigate('/modpacks')}
+          >
             Скасувати
           </Button>
-          <Button variant="primary" size="md">
+          <Button variant="primary" size="md" type="submit">
             Зберегти
           </Button>
         </div>
@@ -90,4 +102,3 @@ function BuilderForm() {
 }
 
 export default BuilderForm;
-

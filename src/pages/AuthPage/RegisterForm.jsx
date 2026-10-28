@@ -1,9 +1,17 @@
+import { Link, useNavigate } from 'react-router-dom';
 import pickIcon from '../../assets/fluent-emoji-flat--pick.svg';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import styles from './AuthPage.module.css';
 
 function RegisterForm() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    navigate('/modpacks');
+  };
+
   const eyeIcon = (
     <svg
       width="16"
@@ -44,7 +52,7 @@ function RegisterForm() {
         </p>
       </div>
 
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <Input
           label="Ім'я користувача"
           type="text"
@@ -98,7 +106,7 @@ function RegisterForm() {
           </label>
         </div>
 
-        <Button variant="primary" size="lg" fullWidth>
+        <Button variant="primary" size="lg" fullWidth type="submit">
           Зареєструватися
         </Button>
 
@@ -115,9 +123,9 @@ function RegisterForm() {
 
       <p className={styles.bottomPrompt}>
         Вже є акаунт?{' '}
-        <a href="#login" className={styles.accentLink}>
+        <Link to="/login" className={styles.accentLink}>
           Увійти
-        </a>
+        </Link>
       </p>
     </section>
   );
