@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import FeatureCard from '../../components/modpacks/FeatureCard';
 import StepCard from '../../components/modpacks/StepCard';
@@ -14,8 +15,7 @@ const STEPS = [
   {
     stepNumber: 2,
     title: 'Додай потрібні моди',
-    description:
-      'Вставляй посилання або знаходь моди за назвою в один клік.',
+    description: 'Вставляй посилання або знаходь моди за назвою в один клік.',
   },
   {
     stepNumber: 3,
@@ -29,8 +29,7 @@ const FEATURES = [
   {
     id: 'versions',
     title: 'Підтримка всіх версій',
-    description:
-      'Швидко налаштовуй збірки під актуальні й legacy-версії гри.',
+    description: 'Швидко налаштовуй збірки під актуальні й legacy-версії гри.',
     icon: (
       <svg
         width="16"
@@ -111,6 +110,15 @@ const FEATURES = [
 ];
 
 function HomePage() {
+  const navigate = useNavigate();
+
+  const handleScrollToSteps = () => {
+    const element = document.getElementById('how-it-works');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <PageLayout activePage="home">
       <div className={styles.wrapper}>
@@ -127,16 +135,20 @@ function HomePage() {
             збірку одним архівом.
           </p>
           <div className={styles.heroActions}>
-            <Button variant="primary" size="md">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => navigate('/login')}
+            >
               Почати створювати
             </Button>
-            <Button variant="secondary" size="md">
+            <Button variant="secondary" size="md" onClick={handleScrollToSteps}>
               Як це працює
             </Button>
           </div>
         </section>
 
-        <section className={styles.section}>
+        <section id="how-it-works" className={styles.section}>
           <h2 className={styles.sectionTitle}>Як це працює?</h2>
           <div className={styles.stepsGrid}>
             {STEPS.map((step) => (
@@ -169,4 +181,3 @@ function HomePage() {
 }
 
 export default HomePage;
-

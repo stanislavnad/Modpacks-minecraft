@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import ModpackCard from '../../components/modpacks/ModpackCard';
 import ModpackFilters from '../../components/modpacks/ModpackFilters';
@@ -35,6 +36,8 @@ const MODPACKS = [
 ];
 
 function MyModpacksPage() {
+  const navigate = useNavigate();
+
   return (
     <PageLayout activePage="modpacks">
       <div className={styles.pageContent}>
@@ -42,7 +45,11 @@ function MyModpacksPage() {
 
         <div className={styles.titleRow}>
           <h1 className={styles.title}>Мої збірки ({MODPACKS.length})</h1>
-          <Button variant="primary" size="md">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate('/builder')}
+          >
             + Новий модпак
           </Button>
         </div>
@@ -57,6 +64,7 @@ function MyModpacksPage() {
               modsCount={pack.modsCount}
               size={pack.size}
               updatedAt={pack.updatedAt}
+              onEdit={() => navigate('/builder')}
             />
           ))}
         </section>
@@ -66,4 +74,3 @@ function MyModpacksPage() {
 }
 
 export default MyModpacksPage;
-

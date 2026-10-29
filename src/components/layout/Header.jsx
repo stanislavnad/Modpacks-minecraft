@@ -1,18 +1,21 @@
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import pickIcon from '../../assets/fluent-emoji-flat--pick.svg';
 import Button from '../ui/Button';
 import styles from './Header.module.css';
 
-function Header({ activePage = 'home' }) {
+function Header() {
+  const navigate = useNavigate();
+
   const navItems = [
-    { id: 'home', label: 'Головна', href: '#home' },
-    { id: 'modpacks', label: 'Мої збірки', href: '#modpacks' },
-    { id: 'builder', label: 'Конструктор', href: '#builder' },
+    { id: 'home', label: 'Головна', to: '/' },
+    { id: 'modpacks', label: 'Мої збірки', to: '/modpacks' },
+    { id: 'builder', label: 'Конструктор', to: '/builder' },
   ];
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <a href="#home" className={styles.brand}>
+        <Link to="/" className={styles.brand}>
           <img
             src={pickIcon}
             alt=""
@@ -20,24 +23,29 @@ function Header({ activePage = 'home' }) {
             aria-hidden="true"
           />
           <span className={styles.brandText}>Modpacks minecraft</span>
-        </a>
+        </Link>
 
         <nav className={styles.nav} aria-label="Головна навігація">
           {navItems.map((item) => (
-            <a
+            <NavLink
               key={item.id}
-              href={item.href}
-              className={`${styles.navLink} ${
-                activePage === item.id ? styles.active : ''
-              }`.trim()}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) =>
+                `${styles.navLink} ${isActive ? styles.active : ''}`.trim()
+              }
             >
               {item.label}
-            </a>
+            </NavLink>
           ))}
         </nav>
 
         <div className={styles.actions}>
-          <Button variant="secondary" size="sm">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate('/login')}
+          >
             Увійти
           </Button>
         </div>
