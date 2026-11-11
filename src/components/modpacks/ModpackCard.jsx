@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
@@ -11,7 +12,20 @@ function ModpackCard({
   size,
   updatedAt,
   onEdit,
+  onDelete,
+  onDownload,
 }) {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadClick = () => {
+    if (downloading) return;
+    setDownloading(true);
+    onDownload?.(title);
+    setTimeout(() => {
+      setDownloading(false);
+    }, 1800);
+  };
+
   return (
     <article className={styles.card}>
       <div className={styles.header}>
@@ -39,8 +53,13 @@ function ModpackCard({
       </div>
 
       <div className={styles.actions}>
-        <Button variant="primary" size="md" className={styles.downloadBtn}>
-          Завантажити .zip
+        <Button
+          variant="primary"
+          size="md"
+          className={styles.downloadBtn}
+          onClick={handleDownloadClick}
+        >
+          {downloading ? 'Архів готовий ✓' : 'Завантажити .zip'}
         </Button>
         <IconButton label="Редагувати збірку" onClick={onEdit}>
           <svg
@@ -57,7 +76,11 @@ function ModpackCard({
             <path d="m15 5 4 4" />
           </svg>
         </IconButton>
-        <IconButton variant="danger" label="Видалити збірку">
+        <IconButton
+          variant="danger"
+          label="Видалити збірку"
+          onClick={onDelete}
+        >
           <svg
             width="15"
             height="15"

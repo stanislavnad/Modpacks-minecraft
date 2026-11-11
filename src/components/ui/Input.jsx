@@ -5,6 +5,7 @@ function Input({
   hint,
   leftIcon,
   rightIcon,
+  onRightIconClick,
   type = 'text',
   className = '',
   ...props
@@ -25,7 +26,26 @@ function Input({
             .join(' ')}
           {...props}
         />
-        {rightIcon && <span className={styles.rightIcon}>{rightIcon}</span>}
+        {rightIcon && (
+          <span
+            className={styles.rightIcon}
+            onClick={onRightIconClick}
+            role={onRightIconClick ? 'button' : undefined}
+            tabIndex={onRightIconClick ? 0 : undefined}
+            onKeyDown={
+              onRightIconClick
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onRightIconClick();
+                    }
+                  }
+                : undefined
+            }
+          >
+            {rightIcon}
+          </span>
+        )}
       </div>
       {hint && <p className={styles.hint}>{hint}</p>}
     </div>

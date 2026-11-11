@@ -1,15 +1,80 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import pickIcon from '../../assets/fluent-emoji-flat--pick.svg';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthPage.module.css';
 
 function RegisterForm() {
   const navigate = useNavigate();
+  const {
+    register,
+    loginWithGithub,
+    loading,
+    error: authError,
+    clearError,
+  } = useAuth();
 
-  const handleSubmit = (event) => {
+  const [username, setUsername] = useState('alex_crafter');
+  const [email, setEmail] = useState('alex_new@example.com');
+  const [password, setPassword] = useState('password1234');
+  const [confirmPassword, setConfirmPassword] = useState('password1234');
+  const [agreeTerms, setAgreeTerms] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [localError, setLocalError] = useState('');
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate('/modpacks');
+    setLocalError('');
+    clearError();
+
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+
+    if (trimmedUsername.length < 3) {
+      setLocalError("Ім'я користувача має містити щонайменше 3 символи");
+      return;
+    }
+    if (!trimmedEmail || !trimmedEmail.includes('@')) {
+      setLocalError('Введіть коректну адресу Email');
+      return;
+    }
+    if (password.length < 6) {
+      setLocalError('Пароль має містити щонайменше 6 символів');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setLocalError('Паролі не співпадають');
+      return;
+    }
+    if (!agreeTerms) {
+      setLocalError('Потрібно погодитися з умовами сервісу');
+      return;
+    }
+
+    try {
+      await register({
+        username: trimmedUsername,
+        email: trimmedEmail,
+        password,
+      });
+      navigate('/modpacks');
+    } catch {
+      // Помилка вже збережена в authError
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    setLocalError('');
+    clearError();
+    try {
+      await loginWithGithub();
+      navigate('/modpacks');
+    } catch {
+      // Помилка вже збережена в authError
+    }
   };
 
   const eyeIcon = (
@@ -40,6 +105,8 @@ function RegisterForm() {
     </svg>
   );
 
+  const activeError = localError || authError;
+
   return (
     <section className={styles.card}>
       <div className={styles.topHeader}>
@@ -52,40 +119,53 @@ function RegisterForm() {
         </p>
       </div>
 
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        {activeError && (
+          <div className={styles.errorBox} role="alert">
+            {activeError}
+          </div>
+        )}
+
         <Input
           label="Ім'я користувача"
           type="text"
-          defaultValue="alex_crafter"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           placeholder="Введіть нікнейм"
         />
 
         <Input
           label="Email"
           type="email"
-          defaultValue="alex@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="alex@example.com"
         />
 
         <Input
           label="Пароль"
-          type="password"
-          defaultValue="password1234"
+          type={showPassword ? 'text' : 'password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           rightIcon={eyeIcon}
+          onRightIconClick={() => setShowPassword((prev) => !prev)}
         />
 
         <Input
           label="Підтвердження пароля"
-          type="password"
-          defaultValue="password1234"
+          type={showConfirmPassword ? 'text' : 'password'}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           rightIcon={eyeIcon}
+          onRightIconClick={() => setShowConfirmPassword((prev) => !prev)}
         />
 
         <div className={styles.optionsRow}>
           <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
-              defaultChecked
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
               className={styles.checkboxInput}
             />
             <span className={styles.customCheckbox}>
@@ -106,8 +186,14 @@ function RegisterForm() {
           </label>
         </div>
 
-        <Button variant="primary" size="lg" fullWidth type="submit">
-          Зареєструватися
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? 'Реєстрація...' : 'Зареєструватися'}
         </Button>
 
         <div className={styles.divider}>
@@ -116,7 +202,14 @@ function RegisterForm() {
           <span className={styles.dividerLine} />
         </div>
 
-        <Button variant="secondary" size="lg" fullWidth icon={githubIcon}>
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          icon={githubIcon}
+          onClick={handleGithubLogin}
+          disabled={loading}
+        >
           GitHub
         </Button>
       </form>

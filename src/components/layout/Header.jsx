@@ -1,16 +1,23 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import pickIcon from '../../assets/fluent-emoji-flat--pick.svg';
+import { useAuth } from '../../hooks/useAuth';
 import Button from '../ui/Button';
 import styles from './Header.module.css';
 
 function Header() {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const navItems = [
     { id: 'home', label: 'Головна', to: '/' },
     { id: 'modpacks', label: 'Мої збірки', to: '/modpacks' },
     { id: 'builder', label: 'Конструктор', to: '/builder' },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
     <header className={styles.header}>
@@ -41,13 +48,24 @@ function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate('/login')}
-          >
-            Увійти
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <span className={styles.username}>
+                {user?.username || user?.email}
+              </span>
+              <Button variant="secondary" size="sm" onClick={handleLogout}>
+                Вийти
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate('/login')}
+            >
+              Увійти
+            </Button>
+          )}
         </div>
       </div>
     </header>

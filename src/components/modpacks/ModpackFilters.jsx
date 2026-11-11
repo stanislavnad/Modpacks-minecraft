@@ -2,13 +2,20 @@ import Badge from '../ui/Badge';
 import Input from '../ui/Input';
 import styles from './ModpackFilters.module.css';
 
-function ModpackFilters() {
-  const filters = [
-    { id: 'all', label: 'Всі', active: true },
-    { id: 'fabric', label: 'Fabric', active: false },
-    { id: 'forge', label: 'Forge', active: false },
-  ];
+const FILTERS = [
+  { id: 'all', label: 'Всі' },
+  { id: 'Fabric', label: 'Fabric' },
+  { id: 'Forge', label: 'Forge' },
+  { id: 'NeoForge', label: 'NeoForge' },
+  { id: 'Quilt', label: 'Quilt' },
+];
 
+function ModpackFilters({
+  searchQuery = '',
+  onSearchChange,
+  activeLoader = 'all',
+  onLoaderChange,
+}) {
   const searchIcon = (
     <svg
       width="15"
@@ -32,11 +39,26 @@ function ModpackFilters() {
           placeholder="Пошук збірки..."
           leftIcon={searchIcon}
           aria-label="Пошук збірки"
+          value={searchQuery}
+          onChange={(e) => onSearchChange?.(e.target.value)}
         />
       </div>
       <div className={styles.pills}>
-        {filters.map((filter) => (
-          <Badge key={filter.id} variant="filter" active={filter.active}>
+        {FILTERS.map((filter) => (
+          <Badge
+            key={filter.id}
+            variant="filter"
+            active={activeLoader === filter.id}
+            onClick={() => onLoaderChange?.(filter.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onLoaderChange?.(filter.id);
+              }
+            }}
+          >
             {filter.label}
           </Badge>
         ))}
@@ -46,4 +68,3 @@ function ModpackFilters() {
 }
 
 export default ModpackFilters;
-
