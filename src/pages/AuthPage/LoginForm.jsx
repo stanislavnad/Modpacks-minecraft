@@ -1,15 +1,55 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import pickIcon from '../../assets/fluent-emoji-flat--pick.svg';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthPage.module.css';
 
 function LoginForm() {
   const navigate = useNavigate();
+  const { login, loginWithGithub, loading, error: authError, clearError } = useAuth();
 
-  const handleSubmit = (event) => {
+  const [email, setEmail] = useState('alex@example.com');
+  const [password, setPassword] = useState('password1234');
+  const [rememberMe, setRememberMe] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [localError, setLocalError] = useState('');
+  const [forgotHint, setForgotHint] = useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate('/modpacks');
+    setLocalError('');
+    setForgotHint(false);
+    clearError();
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !trimmedEmail.includes('@')) {
+      setLocalError('Введіть коректну адресу Email');
+      return;
+    }
+    if (password.length < 6) {
+      setLocalError('Пароль має містити щонайменше 6 символів');
+      return;
+    }
+
+    try {
+      await login({ email: trimmedEmail, password, rememberMe });
+      navigate('/modpacks');
+    } catch {
+      // Помилка вже збережена в authError
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    setLocalError('');
+    clearError();
+    try {
+      await loginWithGithub();
+      navigate('/modpacks');
+    } catch {
+      // Помилка вже збережена в authError
+    }
   };
 
   const eyeIcon = (
@@ -40,6 +80,8 @@ function LoginForm() {
     </svg>
   );
 
+  const activeError = localError || authError;
+
   return (
     <section className={styles.card}>
       <div className={styles.topHeader}>
@@ -52,26 +94,42 @@ function LoginForm() {
         </p>
       </div>
 
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        {activeError && (
+          <div className={styles.errorBox} role="alert">
+            {activeError}
+          </div>
+        )}
+
+        {forgotHint && (
+          <div className={styles.infoBox}>
+            Демо-доступ: alex@example.com / password1234
+          </div>
+        )}
+
         <Input
           label="Email"
           type="email"
-          defaultValue="alex@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="alex@example.com"
         />
 
         <Input
           label="Пароль"
-          type="password"
-          defaultValue="password1234"
+          type={showPassword ? 'text' : 'password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           rightIcon={eyeIcon}
+          onRightIconClick={() => setShowPassword((prev) => !prev)}
         />
 
         <div className={styles.optionsRow}>
           <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
-              defaultChecked
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
               className={styles.checkboxInput}
             />
             <span className={styles.customCheckbox}>
@@ -90,13 +148,23 @@ function LoginForm() {
             </span>
             <span>Запам&apos;ятати мене</span>
           </label>
-          <Link to="/register" className={styles.accentLink}>
+          <button
+            type="button"
+            className={`${styles.accentLink} ${styles.linkBtn}`}
+            onClick={() => setForgotHint((prev) => !prev)}
+          >
             Забули пароль?
-          </Link>
+          </button>
         </div>
 
-        <Button variant="primary" size="lg" fullWidth type="submit">
-          Увійти
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? 'Вхід...' : 'Увійти'}
         </Button>
 
         <div className={styles.divider}>
@@ -105,7 +173,14 @@ function LoginForm() {
           <span className={styles.dividerLine} />
         </div>
 
-        <Button variant="secondary" size="lg" fullWidth icon={githubIcon}>
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          icon={githubIcon}
+          onClick={handleGithubLogin}
+          disabled={loading}
+        >
           GitHub
         </Button>
       </form>

@@ -3,6 +3,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import FeatureCard from '../../components/modpacks/FeatureCard';
 import StepCard from '../../components/modpacks/StepCard';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './HomePage.module.css';
 
 const STEPS = [
@@ -111,6 +112,7 @@ const FEATURES = [
 
 function HomePage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleScrollToSteps = () => {
     const element = document.getElementById('how-it-works');
@@ -138,7 +140,7 @@ function HomePage() {
             <Button
               variant="primary"
               size="md"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(isAuthenticated ? '/builder' : '/login')}
             >
               Почати створювати
             </Button>

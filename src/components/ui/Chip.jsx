@@ -1,6 +1,6 @@
 import styles from './Chip.module.css';
 
-function Chip({ label }) {
+function Chip({ label, onRemove }) {
   return (
     <span className={styles.chip}>
       <span>{label}</span>
@@ -8,6 +8,7 @@ function Chip({ label }) {
         type="button"
         className={styles.removeBtn}
         aria-label={`Видалити ${label}`}
+        onClick={onRemove}
       >
         ×
       </button>

@@ -25,3 +25,30 @@
   gap: 20px;
 }
 
+.toast {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.errorBox {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: var(--danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.emptyState {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
